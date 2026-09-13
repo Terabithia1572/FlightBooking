@@ -1,12 +1,7 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace FlightBooking.Entites
+﻿namespace FlightBooking.DTOs.FlightDTOs
 {
-    public class Flight
+    public class UpdateFlightDTO
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string FlightId { get; set; } // ObjectId
         public string FlightNumber { get; set; } // TK123, PC2023
         public string AirlineCode { get; set; } // TK, PC, LH
