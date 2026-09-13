@@ -36,6 +36,7 @@
         @await Component.InvokeAsync("_DefaultServiceComponentPartial") @*View Component çağrılarak sayfanın Service bölümü oluşturulur.  *@
         <!-- brand-area -->
         @await Component.InvokeAsync("_DefaultFlightStatusComponentPartial") @*View Component çağrılarak sayfanın Flight Status bölümü oluşturulur.  *@
+        @await Component.InvokeAsync("_DefaultFrequantlyAskedQuestionComponentPartial") @*View Component çağrılarak sayfanın Frequently Asked Question bölümü oluşturulur.  *@
         <!-- brand-area-end -->
         <!-- service-area -->
        
@@ -143,17 +144,6 @@
     </footer>
     <!-- footer-area-end -->
     <!-- JS here -->
-    <script src="~/geair/assets/js/vendor/jquery-3.6.0.min.js"></script>
-    <script src="~/geair/assets/js/bootstrap.min.js"></script>
-    <script src="~/geair/assets/js/isotope.pkgd.min.js"></script>
-    <script src="~/geair/assets/js/imagesloaded.pkgd.min.js"></script>
-    <script src="~/geair/assets/js/jquery.magnific-popup.min.js"></script>
-    <script src="~/geair/assets/js/jquery.odometer.min.js"></script>
-    <script src="~/geair/assets/js/bootstrap-datepicker.min.js"></script>
-    <script src="~/geair/assets/js/jquery.appear.js"></script>
-    <script src="~/geair/assets/js/slick.min.js"></script>
-    <script src="~/geair/assets/js/jquery-ui.min.js"></script>
-    <script src="~/geair/assets/js/wow.min.js"></script>
-    <script src="~/geair/assets/js/main.js"></script>
+    @await Component.InvokeAsync("_DefaultScriptsComponentPartial") @*View Component çağrılarak sayfanın Script bölümü oluşturulur.  *@
 </body>
 </html>
