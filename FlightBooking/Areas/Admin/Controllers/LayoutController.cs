@@ -3,14 +3,9 @@
 namespace FlightBooking.Areas.Admin.Controllers
 {
     [Area("Admin")] //Area: MVC projesini Admin, Kullanıcı gibi büyük bölümlere ayırmamızı sağlar.
-    public class FlightsController : Controller
+    public class LayoutController : Controller
     {
-        public IActionResult FlightList()
-        {
-            return View();
-        }
-        [HttpGet]
-        public IActionResult CreateFlight()
+        public IActionResult AdminLayout()
         {
             return View();
         }
