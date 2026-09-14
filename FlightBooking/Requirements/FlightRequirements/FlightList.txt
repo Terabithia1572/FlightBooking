@@ -4,26 +4,26 @@
    Layout: AdminLayout
    ============================================================ *@
 
-@model IEnumerable<FlightBooking.DTOs.FlightDTOs.ResultFlightDTO>
+@model IEnumerable<FlightBooking.Dtos.FlightDtos.ResultFlightDto>
 
 @{
     Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
     ViewData["Title"] = "Flights Management";
 
     @* ---- Stat hesaplamaları (model boşsa sıfır döner) ---- *@
-    int totalFlights = Model?.Count() ?? 0;
-    int completedFlights = Model?.Count(f => f.Status == "Completed") ?? 0;
-    int delayedFlights = Model?.Count(f => f.Status == "Delayed") ?? 0;
-    int cancelledFlights = Model?.Count(f => f.Status == "Cancelled") ?? 0;
+    int totalFlights     = Model?.Count()              ?? 0;
+    int completedFlights = Model?.Count(f => f.Status == "Completed")  ?? 0;
+    int delayedFlights   = Model?.Count(f => f.Status == "Delayed")    ?? 0;
+    int cancelledFlights = Model?.Count(f => f.Status == "Cancelled")  ?? 0;
 
     @* ---- Status → Türkçe etiket & CSS sınıfı eşlemesi ---- *@
     var statusMap = new Dictionary<string, (string Label, string Css, string Icon)>
     {
-        ["Scheduled"] = ("Planlandı", "status-scheduled", "bi-calendar-check"),
-        ["Boarding"] = ("Boarding", "status-boarding", "bi-check2-circle"),
-        ["Delayed"] = ("Gecikmeli", "status-delayed", "bi-exclamation-triangle"),
-        ["Cancelled"] = ("İptal", "status-cancelled", "bi-x-circle"),
-        ["Completed"] = ("Tamamlandı", "status-completed", "bi-check-circle"),
+        ["Scheduled"]  = ("Planlandı", "status-scheduled", "bi-calendar-check"),
+        ["Boarding"]   = ("Boarding",  "status-boarding",  "bi-check2-circle"),
+        ["Delayed"]    = ("Gecikmeli", "status-delayed",   "bi-exclamation-triangle"),
+        ["Cancelled"]  = ("İptal",     "status-cancelled", "bi-x-circle"),
+        ["Completed"]  = ("Tamamlandı","status-completed", "bi-check-circle"),
     };
 }
 
@@ -162,17 +162,17 @@
                         {
                             @* Status badge değerlerini al, bilinmeyen status için fallback *@
                             var (label, css, icon) = statusMap.TryGetValue(flight.Status, out var sv)
-                            ? sv
-                            : (flight.Status, "status-scheduled", "bi-circle");
+                                ? sv
+                                : (flight.Status, "status-scheduled", "bi-circle");
 
                             @* Koltuk doluluk oranı *@
                             int occupancy = flight.TotalSeats > 0
-                            ? (int)Math.Round((double)(flight.TotalSeats - flight.AvailableSeats) / flight.TotalSeats * 100)
-                            : 0;
+                                ? (int)Math.Round((double)(flight.TotalSeats - flight.AvailableSeats) / flight.TotalSeats * 100)
+                                : 0;
 
                             @* Süreyi saat:dakika formatına çevir *@
                             int durHour = flight.DurationMinutes / 60;
-                            int durMin = flight.DurationMinutes % 60;
+                            int durMin  = flight.DurationMinutes % 60;
                             string durStr = durHour > 0 ? $"{durHour}s {durMin}dk" : $"{durMin}dk";
 
                             <tr data-flight-no="@flight.FlightNumber.ToLower()"
@@ -357,308 +357,284 @@
    SECTION: Extra CSS – sadece bu sayfaya özel stiller
 ============================================================ *@
 @section Styles {
-    <style>
+<style>
 
-        /* ---- Havayolu chip ---- */
-        .airline-chip {
-            display: inline-block;
-            padding: 3px 10px;
-            background: var(--navy);
-            color: #fff;
-            border-radius: 6px;
-            font-family: 'Syne', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: .5px;
-        }
+    /* ---- Havayolu chip ---- */
+    .airline-chip {
+        display: inline-block;
+        padding: 3px 10px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 6px;
+        font-family: 'Syne', sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .5px;
+    }
 
-        /* ---- Havalimanı hücresi ---- */
-        .airport-cell {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.3;
-        }
+    /* ---- Havalimanı hücresi ---- */
+    .airport-cell {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.3;
+    }
 
-        .airport-code {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--navy);
-        }
+    .airport-code {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--navy);
+    }
 
-        .airport-name {
-            font-size: 11px;
-            color: var(--gray-300);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 140px;
-        }
+    .airport-name {
+        font-size: 11px;
+        color: var(--gray-300);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 140px;
+    }
 
-        /* ---- Tarih alt yazısı ---- */
-        .date-sub {
-            display: block;
-            font-size: 11px;
-            color: var(--gray-300);
-            margin-top: 1px;
-        }
+    /* ---- Tarih alt yazısı ---- */
+    .date-sub {
+        display: block;
+        font-size: 11px;
+        color: var(--gray-300);
+        margin-top: 1px;
+    }
 
-        /* ---- Süre hücresi ---- */
-        .duration-cell {
-            font-size: 12.5px;
-            color: var(--gray-500);
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
+    /* ---- Süre hücresi ---- */
+    .duration-cell {
+        font-size: 12.5px;
+        color: var(--gray-500);
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
 
-        /* ---- Kapasite ---- */
-        .capacity-cell {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 80px;
-        }
+    /* ---- Kapasite ---- */
+    .capacity-cell { display: flex; flex-direction: column; gap: 4px; min-width: 80px; }
 
-        .capacity-text {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: var(--gray-700);
-        }
+    .capacity-text {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--gray-700);
+    }
 
-        .cap-available {
-            color: #10B981;
-        }
+    .cap-available { color: #10B981; }
+    .cap-sep       { color: var(--gray-300); margin: 0 1px; }
+    .cap-total     { color: var(--gray-500); }
 
-        .cap-sep {
-            color: var(--gray-300);
-            margin: 0 1px;
-        }
+    .cap-bar {
+        height: 5px;
+        background: var(--gray-100);
+        border-radius: 4px;
+        overflow: hidden;
+    }
 
-        .cap-total {
-            color: var(--gray-500);
-        }
+    .cap-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width .5s ease;
+    }
 
-        .cap-bar {
-            height: 5px;
-            background: var(--gray-100);
-            border-radius: 4px;
-            overflow: hidden;
-        }
+    .cap-ok       { background: #10B981; }
+    .cap-warning  { background: #F59E0B; }
+    .cap-critical { background: #EF4444; }
 
-        .cap-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width .5s ease;
-        }
+    /* ---- Fiyat ---- */
+    .price-cell {
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+        white-space: nowrap;
+    }
 
-        .cap-ok {
-            background: #10B981;
-        }
+    .price-cell small {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--gray-300);
+        margin-left: 2px;
+    }
 
-        .cap-warning {
-            background: #F59E0B;
-        }
+    /* ---- Tamamlandı badge (yeni durum) ---- */
+    .status-completed {
+        background: rgba(107,114,153,.1);
+        color: var(--gray-500);
+    }
 
-        .cap-critical {
-            background: #EF4444;
-        }
+    .status-completed .dot { background: var(--gray-300); }
 
-        /* ---- Fiyat ---- */
-        .price-cell {
-            font-family: 'Syne', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--navy);
-            white-space: nowrap;
-        }
+    /* ---- Boş tablo satırı ---- */
+    .empty-row {
+        text-align: center;
+        padding: 48px 20px !important;
+        color: var(--gray-300);
+        font-size: 14px;
+    }
 
-            .price-cell small {
-                font-family: 'DM Sans', sans-serif;
-                font-size: 10px;
-                font-weight: 600;
-                color: var(--gray-300);
-                margin-left: 2px;
-            }
-
-        /* ---- Tamamlandı badge (yeni durum) ---- */
-        .status-completed {
-            background: rgba(107,114,153,.1);
-            color: var(--gray-500);
-        }
-
-            .status-completed .dot {
-                background: var(--gray-300);
-            }
-
-        /* ---- Boş tablo satırı ---- */
-        .empty-row {
-            text-align: center;
-            padding: 48px 20px !important;
-            color: var(--gray-300);
-            font-size: 14px;
-        }
-
-    </style>
+</style>
 }
 
 @* ============================================================
    SECTION: Scripts – client-side arama + pagination
 ============================================================ *@
 @section Scripts {
-    <script>
-        /* ---------------------------------------------------------------
-           Client-side filter + pagination
-           Sunucu zaten tüm listeyi render eder; JS sadece DOM'u filtreler.
-           Büyük veri setlerinde server-side pagination tercih edilmeli.
-        --------------------------------------------------------------- */
-        const PER_PAGE = 8;
-        let currentPage = 1;
+<script>
+/* ---------------------------------------------------------------
+   Client-side filter + pagination
+   Sunucu zaten tüm listeyi render eder; JS sadece DOM'u filtreler.
+   Büyük veri setlerinde server-side pagination tercih edilmeli.
+--------------------------------------------------------------- */
+const PER_PAGE = 8;
+let currentPage = 1;
 
-        /* Tüm <tr> satırlarını bir kez al */
-        function allRows() {
-            return Array.from(document.querySelectorAll('#tableBody tr[data-flight-no]'));
-        }
+/* Tüm <tr> satırlarını bir kez al */
+function allRows() {
+    return Array.from(document.querySelectorAll('#tableBody tr[data-flight-no]'));
+}
 
-        function filterTable() {
-            currentPage = 1;
-            applyFiltersAndRender();
-        }
+function filterTable() {
+    currentPage = 1;
+    applyFiltersAndRender();
+}
 
-        function applyFiltersAndRender() {
-            const q       = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-            const status  = document.getElementById('statusFilter').value;
-            const airline = document.getElementById('airlineFilter').value;
+function applyFiltersAndRender() {
+    const q       = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+    const status  = document.getElementById('statusFilter').value;
+    const airline = document.getElementById('airlineFilter').value;
 
-            const rows = allRows();
+    const rows = allRows();
 
-            /* Her satırı filtrele; görünür olanları topla */
-            const visible = rows.filter(row => {
-                const flightNo   = row.dataset.flightNo   || '';
-                const depAirport = row.dataset.depAirport || '';
-                const arrAirport = row.dataset.arrAirport || '';
-                const rowAirline = row.dataset.airline    || '';
-                const rowStatus  = row.dataset.status     || '';
+    /* Her satırı filtrele; görünür olanları topla */
+    const visible = rows.filter(row => {
+        const flightNo   = row.dataset.flightNo   || '';
+        const depAirport = row.dataset.depAirport || '';
+        const arrAirport = row.dataset.arrAirport || '';
+        const rowAirline = row.dataset.airline    || '';
+        const rowStatus  = row.dataset.status     || '';
 
-                const matchQ       = !q      || [flightNo, depAirport, arrAirport, rowAirline].some(v => v.includes(q));
-                const matchStatus  = !status  || rowStatus  === status;
-                const matchAirline = !airline || rowAirline === airline;
+        const matchQ       = !q      || [flightNo, depAirport, arrAirport, rowAirline].some(v => v.includes(q));
+        const matchStatus  = !status  || rowStatus  === status;
+        const matchAirline = !airline || rowAirline === airline;
 
-                /* Önce hepsini gizle */
-                row.style.display = 'none';
-                return matchQ && matchStatus && matchAirline;
-            });
+        /* Önce hepsini gizle */
+        row.style.display = 'none';
+        return matchQ && matchStatus && matchAirline;
+    });
 
-            /* Pagination hesapla */
-            const total      = visible.length;
-            const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-            if (currentPage > totalPages) currentPage = totalPages;
+    /* Pagination hesapla */
+    const total      = visible.length;
+    const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+    if (currentPage > totalPages) currentPage = totalPages;
 
-            const from  = total === 0 ? 0 : (currentPage - 1) * PER_PAGE + 1;
-            const to    = Math.min(currentPage * PER_PAGE, total);
-            const slice = visible.slice(from - 1, to);
+    const from  = total === 0 ? 0 : (currentPage - 1) * PER_PAGE + 1;
+    const to    = Math.min(currentPage * PER_PAGE, total);
+    const slice = visible.slice(from - 1, to);
 
-            /* Sadece mevcut sayfanın satırlarını göster */
-            slice.forEach(row => row.style.display = '');
+    /* Sadece mevcut sayfanın satırlarını göster */
+    slice.forEach(row => row.style.display = '');
 
-            /* Sayaç & info */
-            document.getElementById('rowCount').textContent   = `${total} uçuş bulundu`;
-            document.getElementById('footerInfo').textContent = `${from}–${to} / ${total} uçuş`;
+    /* Sayaç & info */
+    document.getElementById('rowCount').textContent   = `${total} uçuş bulundu`;
+    document.getElementById('footerInfo').textContent = `${from}–${to} / ${total} uçuş`;
 
-            renderPagination(totalPages);
-        }
+    renderPagination(totalPages);
+}
 
-        /* ---- Pagination render ---- */
-        function renderPagination(totalPages) {
-            const ul = document.getElementById('paginationList');
-            let html = '';
+/* ---- Pagination render ---- */
+function renderPagination(totalPages) {
+    const ul = document.getElementById('paginationList');
+    let html = '';
 
-            /* Önceki */
-            html += `<li class="${currentPage === 1 ? 'disabled' : ''}">
-                <span onclick="${currentPage > 1 ? 'goPage(currentPage-1)' : ''}"
-                      style="cursor:${currentPage === 1 ? 'default' : 'pointer'}">
-                    <i class="bi bi-chevron-left" style="font-size:11px;"></i>
-                </span>
+    /* Önceki */
+    html += `<li class="${currentPage === 1 ? 'disabled' : ''}">
+        <span onclick="${currentPage > 1 ? 'goPage(currentPage-1)' : ''}"
+              style="cursor:${currentPage === 1 ? 'default' : 'pointer'}">
+            <i class="bi bi-chevron-left" style="font-size:11px;"></i>
+        </span>
+    </li>`;
+
+    /* Sayfa numaraları (max 7 göster, ortada "...") */
+    const pages = buildPageRange(currentPage, totalPages);
+    pages.forEach(p => {
+        if (p === '...') {
+            html += `<li><span style="cursor:default;border:none;color:var(--gray-300);">…</span></li>`;
+        } else {
+            html += `<li class="${p === currentPage ? 'active' : ''}">
+                <a onclick="goPage(${p})">${p}</a>
             </li>`;
-
-            /* Sayfa numaraları (max 7 göster, ortada "...") */
-            const pages = buildPageRange(currentPage, totalPages);
-            pages.forEach(p => {
-                if (p === '...') {
-                    html += `<li><span style="cursor:default;border:none;color:var(--gray-300);">…</span></li>`;
-                } else {
-                    html += `<li class="${p === currentPage ? 'active' : ''}">
-                        <a onclick="goPage(${p})">${p}</a>
-                    </li>`;
-                }
-            });
-
-            /* Sonraki */
-            html += `<li class="${currentPage === totalPages ? 'disabled' : ''}">
-                <span onclick="${currentPage < totalPages ? 'goPage(currentPage+1)' : ''}"
-                      style="cursor:${currentPage === totalPages ? 'default' : 'pointer'}">
-                    <i class="bi bi-chevron-right" style="font-size:11px;"></i>
-                </span>
-            </li>`;
-
-            ul.innerHTML = html;
         }
+    });
 
-        /* 1 2 3 … 8 9 10 tarzı akıllı sayfa dizisi */
-        function buildPageRange(current, total) {
-            if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-            const pages = [];
-            pages.push(1);
-            if (current > 3)           pages.push('...');
-            for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) pages.push(p);
-            if (current < total - 2)   pages.push('...');
-            pages.push(total);
-            return pages;
-        }
+    /* Sonraki */
+    html += `<li class="${currentPage === totalPages ? 'disabled' : ''}">
+        <span onclick="${currentPage < totalPages ? 'goPage(currentPage+1)' : ''}"
+              style="cursor:${currentPage === totalPages ? 'default' : 'pointer'}">
+            <i class="bi bi-chevron-right" style="font-size:11px;"></i>
+        </span>
+    </li>`;
 
-        function goPage(p) {
-            currentPage = p;
-            applyFiltersAndRender();
-        }
+    ul.innerHTML = html;
+}
 
-        /* ---- Delete modal ---- */
-        function confirmDelete(flightId, flightNo) {
-            document.getElementById('deleteFlightNo').textContent = flightNo;
-            document.getElementById('deleteForm').action =
-                `/Admin/Flights/Delete/${flightId}`;          // route'a göre düzenle
-            document.getElementById('deleteModal').classList.add('open');
-        }
+/* 1 2 3 … 8 9 10 tarzı akıllı sayfa dizisi */
+function buildPageRange(current, total) {
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const pages = [];
+    pages.push(1);
+    if (current > 3)           pages.push('...');
+    for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) pages.push(p);
+    if (current < total - 2)   pages.push('...');
+    pages.push(total);
+    return pages;
+}
 
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('open');
-        }
+function goPage(p) {
+    currentPage = p;
+    applyFiltersAndRender();
+}
 
-        /* Overlay tıklamasında kapat */
-        document.getElementById('deleteModal').addEventListener('click', function (e) {
-            if (e.target === this) closeDeleteModal();
-        });
+/* ---- Delete modal ---- */
+function confirmDelete(flightId, flightNo) {
+    document.getElementById('deleteFlightNo').textContent = flightNo;
+    document.getElementById('deleteForm').action =
+        `/Admin/Flights/Delete/${flightId}`;          // route'a göre düzenle
+    document.getElementById('deleteModal').classList.add('open');
+}
 
-        /* ---- Toast ---- */
-        function showToast(msg, type = 'info') {
-            const icons = {
-                success: 'bi-check-circle-fill',
-                danger:  'bi-x-circle-fill',
-                warning: 'bi-exclamation-triangle-fill',
-                info:    'bi-info-circle-fill',
-            };
-            const container = document.getElementById('toastContainer');
-            const t = document.createElement('div');
-            t.className = 'toast-item';
-            t.innerHTML = `<i class="bi ${icons[type] ?? icons.info} toast-icon ${type}"></i><span>${msg}</span>`;
-            container.appendChild(t);
-            setTimeout(() => {
-                t.style.cssText += 'opacity:0;transform:translateY(20px);transition:.3s;';
-                setTimeout(() => t.remove(), 320);
-            }, 3200);
-        }
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+}
 
-        /* ---- İlk yükleme ---- */
-        document.addEventListener('DOMContentLoaded', () => applyFiltersAndRender());
-    </script>
+/* Overlay tıklamasında kapat */
+document.getElementById('deleteModal').addEventListener('click', function (e) {
+    if (e.target === this) closeDeleteModal();
+});
+
+/* ---- Toast ---- */
+function showToast(msg, type = 'info') {
+    const icons = {
+        success: 'bi-check-circle-fill',
+        danger:  'bi-x-circle-fill',
+        warning: 'bi-exclamation-triangle-fill',
+        info:    'bi-info-circle-fill',
+    };
+    const container = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = 'toast-item';
+    t.innerHTML = `<i class="bi ${icons[type] ?? icons.info} toast-icon ${type}"></i><span>${msg}</span>`;
+    container.appendChild(t);
+    setTimeout(() => {
+        t.style.cssText += 'opacity:0;transform:translateY(20px);transition:.3s;';
+        setTimeout(() => t.remove(), 320);
+    }, 3200);
+}
+
+/* ---- İlk yükleme ---- */
+document.addEventListener('DOMContentLoaded', () => applyFiltersAndRender());
+</script>
 }
