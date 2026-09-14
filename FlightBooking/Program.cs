@@ -1,4 +1,17 @@
+using FlightBooking.Services.FlightServices;
+using FlightBooking.Settings;
+using Microsoft.Extensions.Options;
+using System.Reflection;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<IFlightService, FlightService>(); // IFlightService arayüzünü ve FlightService sýnýfýný DI konteynerine ekledik.
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly()); // AutoMapper'ý DI konteynerine ekledik ve mevcut assembly'i taradýk.
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey")); // DatabaseSettingsKey sýnýfýný DI konteynerine ekledik ve appsettings.json dosyasýndaki DatabaseSettings bölümünü bind ettik.
+builder.Services.AddScoped<IDatabaseSettings>(sp => {
+    return sp.GetRequiredService<IOptions<DatabaseSettings>>().Value; // IDatabaseSettings arayüzünü DI konteynerine ekledik ve DatabaseSettings sýnýfýný bind ettik.
+}); 
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
