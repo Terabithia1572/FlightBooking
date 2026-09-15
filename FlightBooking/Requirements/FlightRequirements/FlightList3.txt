@@ -1,23 +1,10 @@
 ﻿﻿@* ============================================================
    Areas/Admin/Views/Flights/Index.cshtml
-   Model: IEnumerable<FlightBooking.Dtos.FlightDtos.ResultFlightDto>
-   Layout: AdminLayout
-   ============================================================ *@
-
-@model IEnumerable<FlightBooking.DTOs.FlightDTOs.ResultFlightDTO>
-
-﻿@* ============================================================
-   Areas/Admin/Views/Flights/Index.cshtml
    Model : List<FlightBooking.Dtos.FlightDtos.ResultFlightDto>
    Layout: AdminLayout
    ============================================================ *@
 
-﻿@* ============================================================
-   Areas/Admin/Views/Flights/Index.cshtml
-   Model : List<FlightBooking.Dtos.FlightDtos.ResultFlightDto>
-   Layout: AdminLayout
-   ============================================================ *@
-
+@model List<FlightBooking.Dtos.FlightDtos.ResultFlightDto>
 
 @{
     Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
