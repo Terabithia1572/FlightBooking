@@ -34,5 +34,10 @@ namespace FlightBooking.Areas.Admin.Controllers
             }
             return View(createFlightDto); // ModelState geçerli değilse, aynı sayfada formu tekrar gösterdik.
         }
+        public async Task<IActionResult> FlightDetail (string id) // FlightDetail metodunu implement ettik. Uçuş detaylarını görüntülemek için id parametresini alır.
+        {
+            var value = await _flightService.GetFlightByIdAsync(id); // IFlightService arayüzünü kullanarak uçuşu id ile aldık.
+            return View(value); // Aldığımız uçuşu View'e gönderdik.
+        }
     }
 }
