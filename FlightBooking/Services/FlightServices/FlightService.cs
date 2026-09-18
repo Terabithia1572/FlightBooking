@@ -13,29 +13,29 @@ namespace FlightBooking.Services.FlightServices
         private readonly IMongoCollection<Flight> _flightCollection; // IMongoCollection<Flight> türünde _flightCollection alanını tanımladık. Bu alan, Flight koleksiyonunu temsil eder.
         private readonly IMongoCollection<Booking> _bookingCollection; // IMongoCollection<Booking> türünde _bookingCollection alanını tanımladık. Bu alan, Booking koleksiyonunu temsil eder.
 
-        public FlightService(IMapper mapper,IDatabaseSettings _databaseSettings, IMongoCollection<Booking> bookingCollection) // Constructor'ı FlightService sınıfına ekledik ve IMapper ile IDatabaseSettings parametrelerini aldık.
+        public FlightService(IMapper mapper, IDatabaseSettings _databaseSettings) // Constructor'ı FlightService sınıfına ekledik ve IMapper ile IDatabaseSettings parametrelerini aldık.
         {
             var client = new MongoClient(_databaseSettings.ConnectionString); // MongoClient sınıfını kullanarak MongoDB bağlantısını oluşturduk.
             var database = client.GetDatabase(_databaseSettings.DatabaseName); // GetDatabase metodu ile belirtilen veritabanını aldık.
             _flightCollection = database.GetCollection<Flight>(_databaseSettings.FlightCollectionName); // GetCollection metodu ile Flight koleksiyonunu aldık.
+            _bookingCollection = database.GetCollection<Booking>(_databaseSettings.BookingCollectionName); // GetCollection metodu ile Booking koleksiyonunu aldık.
             _mapper = mapper; // IMapper örneğini _mapper alanına atadık.
-            _bookingCollection = bookingCollection;
         }
 
         public async Task CreateFlightAsync(CreateFlightDTO createFlightDto) // CreateFlightAsync metodunu implement ettik. Uçuş oluşturma işlemi için CreateFlightDTO parametresini alır.
         {
-            var values=_mapper.Map<Flight>(createFlightDto); // AutoMapper kullanarak CreateFlightDTO nesnesini Flight nesnesine dönüştürdük.
+            var values = _mapper.Map<Flight>(createFlightDto); // AutoMapper kullanarak CreateFlightDTO nesnesini Flight nesnesine dönüştürdük.
             await _flightCollection.InsertOneAsync(values); // InsertOneAsync metodu ile Flight koleksiyonuna yeni uçuşu ekledik.
         }
 
         public async Task DeleteFlightAsync(string id) // DeleteFlightAsync metodunu implement ettik. Silme işlemi için uçuş ID'sini parametre olarak alır.
         {
-           await _flightCollection.DeleteOneAsync(flight => flight.FlightId == id); // DeleteOneAsync metodu ile belirtilen ID'ye sahip uçuşu Flight koleksiyonundan sildik.
+            await _flightCollection.DeleteOneAsync(flight => flight.FlightId == id); // DeleteOneAsync metodu ile belirtilen ID'ye sahip uçuşu Flight koleksiyonundan sildik.
         }
 
         public async Task<List<ResultFlightDTO>> GetAllFlightsAsync() // GetAllFlightsAsync metodunu implement ettik. Tüm uçuşları listelemek için kullanılır.
         {
-            var values= await _flightCollection.Find(flight => true).ToListAsync(); // Find metodu ile tüm uçuşları alıp listeledik.
+            var values = await _flightCollection.Find(flight => true).ToListAsync(); // Find metodu ile tüm uçuşları alıp listeledik.
             return _mapper.Map<List<ResultFlightDTO>>(values); // AutoMapper kullanarak Flight nesnelerini ResultFlightDTO nesnelerine dönüştürdük ve döndürdük.
         }
 
@@ -78,7 +78,7 @@ namespace FlightBooking.Services.FlightServices
 
         public async Task UpdateFlightAsync(UpdateFlightDTO updateFlightDto) // UpdateFlightAsync metodunu implement ettik. Uçuş güncelleme işlemi için UpdateFlightDTO parametresini alır.
         {
-            var values =_mapper.Map<Flight>(updateFlightDto); // AutoMapper kullanarak UpdateFlightDTO nesnesini Flight nesnesine dönüştürdük.
+            var values = _mapper.Map<Flight>(updateFlightDto); // AutoMapper kullanarak UpdateFlightDTO nesnesini Flight nesnesine dönüştürdük.
             await _flightCollection.ReplaceOneAsync(flight => flight.FlightId == updateFlightDto.FlightId, values); // ReplaceOneAsync metodu ile belirtilen ID'ye sahip uçuşu güncelledik.
         }
     }
