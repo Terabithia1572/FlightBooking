@@ -1,4 +1,5 @@
 ﻿using FlightBooking.DTOs.BookingDTOs;
+using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.FlightServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +9,11 @@ namespace FlightBooking.Areas.Admin.Controllers
     public class BookingController : Controller
     {
         private readonly IFlightService _flightService;
-       // private readonly IBookingService _bookingService;
-        public BookingController(IFlightService flightService) //IBookingService bookingService)
+        private readonly IBookingService _bookingService;
+        public BookingController(IFlightService flightService,IBookingService bookingService) //IBookingService bookingService)
         {
             _flightService = flightService;
-         //   _bookingService = bookingService;
+            _bookingService = bookingService;
         }
 
         [HttpGet]
@@ -34,7 +35,7 @@ namespace FlightBooking.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBooking(CreateBookingDTO createBookingDto)
         {
-          //  await _bookingService.CreateBookingAsync(createBookingDto);
+            await _bookingService.CreateBookingAsync(createBookingDto);
             return RedirectToAction("Index", "Bookings", new { area = "Admin" });
         }
         public IActionResult BookingList()
