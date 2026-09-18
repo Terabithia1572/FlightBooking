@@ -38,8 +38,11 @@ namespace FlightBooking.Services.FlightServices
 
         public async Task<GetFlightByIDDTO> GetFlightByIdAsync(string id) // GetFlightByIdAsync metodunu implement ettik. Belirli bir uçuşu ID'sine göre almak için kullanılır.
         {
-            var values=await _flightCollection.Find(flight => flight.FlightId == id).FirstOrDefaultAsync(); // Find metodu ile belirtilen ID'ye sahip uçuşu aldık.
-            return _mapper.Map<GetFlightByIDDTO>(values); // AutoMapper kullanarak Flight nesnesini GetFlightByIDDTO nesnesine dönüştürdük ve döndürdük.
+            //var values = await _flightCollection.Find(flight => flight.FlightId == id).FirstOrDefaultAsync(); // Find metodu ile belirtilen ID'ye sahip uçuşu aldık.
+            //return _mapper.Map<GetFlightByIDDTO>(values); // AutoMapper kullanarak Flight nesnesini GetFlightByIDDTO nesnesine dönüştürdük ve döndürdük.
+
+            var value = await _flightCollection.Find(x => x.FlightId == id).FirstOrDefaultAsync();
+            return _mapper.Map<GetFlightByIDDTO>(value);
         }
 
         public async Task UpdateFlightAsync(UpdateFlightDTO updateFlightDto) // UpdateFlightAsync metodunu implement ettik. Uçuş güncelleme işlemi için UpdateFlightDTO parametresini alır.

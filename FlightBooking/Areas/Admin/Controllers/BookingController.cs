@@ -1,4 +1,5 @@
-﻿using FlightBooking.Services.FlightServices;
+﻿using FlightBooking.DTOs.BookingDTOs;
+using FlightBooking.Services.FlightServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Areas.Admin.Controllers
@@ -7,21 +8,36 @@ namespace FlightBooking.Areas.Admin.Controllers
     public class BookingController : Controller
     {
         private readonly IFlightService _flightService;
-        public async Task< IActionResult> CreateBooking( string id) // CreateBooking sayfasını döndürür 
+       // private readonly IBookingService _bookingService;
+        public BookingController(IFlightService flightService) //IBookingService bookingService)
         {
-            var values= await _flightService.GetFlightByIdAsync(id); // FlightService üzerinden uçuş bilgilerini alır
+            _flightService = flightService;
+         //   _bookingService = bookingService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateBooking(string id)
+        {
+            var value = await _flightService.GetFlightByIdAsync(id);
             ViewBag.id = id;
-            ViewBag.FlightNumber = values.FlightNumber;
-            ViewBag.DepartureAirportCode = values.DepartureAirportCode;
-            ViewBag.DepartureAirportName = values.DepartureAirportName;
-            ViewBag.ArrivalAirportCode = values.ArrivalAirportCode;
-            ViewBag.ArrivalAirportName = values.ArrivalAirportName;
-            ViewBag.DepartureTime = values.DepartureTime;
-            ViewBag.ArrivalTime = values.ArrivalTime;
-            ViewBag.AirlineCode = values.AirlineCode;
+            ViewBag.FlightNumber = value.FlightNumber;
+            ViewBag.DepartureAirportCode = value.DepartureAirportCode;
+            ViewBag.DepartureAirportName = value.DepartureAirportName;
+            ViewBag.ArrivalAirportCode = value.ArrivalAirportCode;
+            ViewBag.ArrivalAirportName = value.ArrivalAirportName;
+            ViewBag.DepartureTime = value.DepartureTime;
+            ViewBag.ArrivalTime = value.ArrivalTime;
+            ViewBag.AirlineCode = value.AirlineCode;
             return View();
         }
-        public IActionResult BookingList() // BookingList sayfasını döndürür
+
+        [HttpPost]
+        public async Task<IActionResult> CreateBooking(CreateBookingDTO createBookingDto)
+        {
+          //  await _bookingService.CreateBookingAsync(createBookingDto);
+            return RedirectToAction("Index", "Bookings", new { area = "Admin" });
+        }
+        public IActionResult BookingList()
         {
             return View();
         }
