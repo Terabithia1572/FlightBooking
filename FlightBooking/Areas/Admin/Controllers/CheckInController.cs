@@ -25,9 +25,12 @@ namespace FlightBooking.Areas.Admin.Controllers
             ViewBag.DepartureTime= TempData["DepartureTime"]; // TempData ile departureTime değerini View'a taşıyoruz
             ViewBag.ArrivalTime= TempData["ArrivalTime"]; // TempData ile arrivalTime değerini View'a taşıyoruz
             var passenger =await _bookingService.GetPassengerNameByIdAsync(id); // bookingService ile passenger bilgilerini alıyoruz
+            var pnrNumber=await _bookingService.GetPnrByPassengerIdAsync(id); // bookingService ile pnr bilgilerini alıyoruz
+            var gate=await _bookingService.GetGateByPassengerIdAsync(id); // bookingService ile gate bilgilerini alıyoruz
             ViewBag.Name= passenger.Name; // passenger adını ViewBag ile View'a taşıyoruz
             ViewBag.Surname= passenger.Surname; // passenger soyadını ViewBag ile View'a taşıyoruz
-
+            ViewBag.PnrNumber= pnrNumber; // pnr bilgisini ViewBag ile View'a taşıyoruz
+            ViewBag.Gate= gate; // gate bilgisini ViewBag ile View'a taşıyoruz
             return View();
         }
     }
