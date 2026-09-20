@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FlightBooking.DTOs.CheckinDTOs;
+using FlightBooking.DTOs.FlightDTOs;
 using FlightBooking.Entites;
 using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.CheckInServices;
