@@ -1,12 +1,14 @@
-﻿using FlightBooking.MachineLearningRegressionModels;
+﻿﻿using FlightBooking.MachineLearningRegressionModels;
 using Microsoft.ML;
 
-namespace FlightBooking.Services.MachineLearningServices
+namespace FlightBooking.Services
 {
     public class FlightRegressionService
     {
         private readonly MLContext _context;
+
         private ITransformer _model;
+
         public FlightRegressionService()
         {
             _context = new MLContext();
