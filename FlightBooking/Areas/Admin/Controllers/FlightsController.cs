@@ -1,4 +1,5 @@
 ﻿using FlightBooking.DTOs.FlightDTOs;
+using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.FlightServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +9,12 @@ namespace FlightBooking.Areas.Admin.Controllers
     public class FlightsController : Controller
     {
         private readonly IFlightService _flightService; // IFlightService arayüzünü kullanmak için _flightService alanını tanımladık.
+        private readonly IBookingService _bookingService; // IBookingService arayüzünü kullanmak için _bookingService alanını tanımladık.
 
-        public FlightsController(IFlightService flightService) // Constructor'ı FlightsController sınıfına ekledik ve IFlightService parametresini aldık.
+        public FlightsController(IFlightService flightService, IBookingService bookingService) // Constructor'ı FlightsController sınıfına ekledik ve IFlightService parametresini aldık.
         {
             _flightService = flightService; // IFlightService örneğini _flightService alanına atadık.
+            _bookingService = bookingService; // IBookingService örneğini _bookingService alanına atadık.
         }
 
         public async Task<IActionResult> FlightList() // FlightList metodunu implement ettik. Tüm uçuşları listelemek için kullanılır.
@@ -52,7 +55,7 @@ namespace FlightBooking.Areas.Admin.Controllers
             TempData["DepartureTime"] = flight.DepartureTime;
             TempData["ArrivalTime"] = flight.ArrivalTime;
 
-            //  var passenger = await _bookingService.GetPassengerNameByIdAsync(id);
+              var passenger = await _bookingService.GetPassengerNameByIdAsync(id);
 
 
             //TempData["PassengerName"] = passengers.Select(x => x.Name).FirstOrDefault();
