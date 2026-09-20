@@ -2,9 +2,10 @@
 
 namespace FlightBooking.Areas.Admin.Controllers
 {
+    [Area("Admin")] // Bu area , Admin alanına ait olduğunu belirtir
     public class CheckInController : Controller
     {
-        [Area("Admin")] // Bu area , Admin alanına ait olduğunu belirtir
+       
         public IActionResult Index()
         {
             return View();
