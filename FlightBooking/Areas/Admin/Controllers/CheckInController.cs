@@ -33,5 +33,9 @@ namespace FlightBooking.Areas.Admin.Controllers
             ViewBag.Gate= gate; // gate bilgisini ViewBag ile View'a taşıyoruz
             return View();
         }
+        public async Task<IActionResult> Index()
+        {
+          return RedirectToAction("FlightList", "Flights"); // Eğer id parametresi yoksa, FlightList sayfasına yönlendiriyoruz            
+        }
     }
 }
