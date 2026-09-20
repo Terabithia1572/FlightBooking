@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using FlightBooking.DTOs.CheckinDTOs;
 using FlightBooking.Entites;
 using FlightBooking.Services.BookingServices;
+using FlightBooking.Services.CheckInServices;
 using FlightBooking.Settings;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -13,10 +15,12 @@ namespace FlightBooking.Areas.Admin.Controllers
     {
        
         private readonly IBookingService _bookingService; // IBookingService arayüzünü kullanmak için _bookingService alanını tanımladık.
+        private readonly ICheckInService _checkInService; // ICheckInService arayüzünü kullanmak için checkInService alanını tanımladık.
 
-        public CheckInController(IBookingService bookingService)
+        public CheckInController(IBookingService bookingService, ICheckInService checkInService)
         {
             _bookingService = bookingService;
+            _checkInService = checkInService;
         }
 
         public async Task<IActionResult> Index(string id)
@@ -33,9 +37,11 @@ namespace FlightBooking.Areas.Admin.Controllers
             ViewBag.Gate= gate; // gate bilgisini ViewBag ile View'a taşıyoruz
             return View();
         }
-        public async Task<IActionResult> Index()
+        [HttpPost]
+        public async Task<IActionResult> Index(CompleteCheckInDTO completeCheckInDTO)
         {
-          return RedirectToAction("FlightList", "Flights"); // Eğer id parametresi yoksa, FlightList sayfasına yönlendiriyoruz            
+            await _checkInService.CompleteCheckInAsync(completeCheckInDTO); // checkInService ile check-in işlemini tamamlıyoruz
+            return RedirectToAction("Index", "CheckIn", new { area = "Admin" }); // check-in işlemi tamamlandıktan sonra Index sayfasına yönlendiriyoruz               
         }
     }
 }
