@@ -23,18 +23,49 @@ namespace FlightBooking.Areas.Admin.Controllers
             _checkInService = checkInService;
         }
 
+        //public async Task<IActionResult> Index(string id)
+        //{
+        //    ViewBag.flightNumber= TempData["flightNumber"]; // TempData ile flightNumber değerini View'a taşıyoruz
+        //    ViewBag.DepartureTime= TempData["DepartureTime"]; // TempData ile departureTime değerini View'a taşıyoruz
+        //    ViewBag.ArrivalTime= TempData["ArrivalTime"]; // TempData ile arrivalTime değerini View'a taşıyoruz
+        //    var passenger =await _bookingService.GetPassengerNameByIdAsync(id); // bookingService ile passenger bilgilerini alıyoruz
+        //    var pnrNumber=await _bookingService.GetPnrByPassengerIdAsync(id); // bookingService ile pnr bilgilerini alıyoruz
+        //    var gate=await _bookingService.GetGateByPassengerIdAsync(id); // bookingService ile gate bilgilerini alıyoruz
+        //    ViewBag.Name= passenger.Name; // passenger adını ViewBag ile View'a taşıyoruz
+        //    ViewBag.Surname= passenger.Surname; // passenger soyadını ViewBag ile View'a taşıyoruz
+        //    ViewBag.PnrNumber= pnrNumber; // pnr bilgisini ViewBag ile View'a taşıyoruz
+        //    ViewBag.Gate= gate; // gate bilgisini ViewBag ile View'a taşıyoruz
+        //    return View();
+        //}
         public async Task<IActionResult> Index(string id)
         {
-            ViewBag.flightNumber= TempData["flightNumber"]; // TempData ile flightNumber değerini View'a taşıyoruz
-            ViewBag.DepartureTime= TempData["DepartureTime"]; // TempData ile departureTime değerini View'a taşıyoruz
-            ViewBag.ArrivalTime= TempData["ArrivalTime"]; // TempData ile arrivalTime değerini View'a taşıyoruz
-            var passenger =await _bookingService.GetPassengerNameByIdAsync(id); // bookingService ile passenger bilgilerini alıyoruz
-            var pnrNumber=await _bookingService.GetPnrByPassengerIdAsync(id); // bookingService ile pnr bilgilerini alıyoruz
-            var gate=await _bookingService.GetGateByPassengerIdAsync(id); // bookingService ile gate bilgilerini alıyoruz
-            ViewBag.Name= passenger.Name; // passenger adını ViewBag ile View'a taşıyoruz
-            ViewBag.Surname= passenger.Surname; // passenger soyadını ViewBag ile View'a taşıyoruz
-            ViewBag.PnrNumber= pnrNumber; // pnr bilgisini ViewBag ile View'a taşıyoruz
-            ViewBag.Gate= gate; // gate bilgisini ViewBag ile View'a taşıyoruz
+            ViewBag.FlightNumber = TempData["FlightNumber"];
+            ViewBag.DepartureTime = TempData["DepartureTime"];
+            ViewBag.ArrivalTime = TempData["ArrivalTime"];
+            ViewBag.AirlineCode = TempData["AirlineCode"];          // banner'da kullanılıyor
+            ViewBag.DepartureAirportCode = TempData["DepartureAirportCode"];
+            ViewBag.DepartureAirportName = TempData["DepartureAirportName"];
+            ViewBag.ArrivalAirportCode = TempData["ArrivalAirportCode"];
+            ViewBag.ArrivalAirportName = TempData["ArrivalAirportName"];
+            ViewBag.BasePrice = TempData["BasePrice"];
+            ViewBag.Currency = TempData["Currency"];
+
+            var passenger = await _bookingService.GetPassengerNameByIdAsync(id);
+            var pnrNumber = await _bookingService.GetPnrByPassengerIdAsync(id);
+            var gate = await _bookingService.GetGateByPassengerIdAsync(id);
+         //   var flightId = await _bookingService.GetFlightIDByPassengerIdAsync(id); // 🔥 yeni metod
+
+            ViewBag.Name = passenger.Name;
+            ViewBag.Surname = passenger.Surname;
+            ViewBag.PassengerName = passenger.Name + " " + passenger.Surname;
+            ViewBag.PnrNumber = pnrNumber;
+            ViewBag.Pnr = pnrNumber;   // modal'da @ViewBag.Pnr kullanılıyor
+            ViewBag.Gate = gate;
+
+            // 🔥 Form için gerekli — hidden field olarak view'a taşınacak
+            ViewBag.PassengerId = id;
+            ViewBag.FlightId = "6aa839f26b4646f8270761de";
+
             return View();
         }
         [HttpPost]
