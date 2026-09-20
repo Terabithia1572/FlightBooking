@@ -6,8 +6,9 @@ namespace FlightBooking.Areas.Admin.Controllers
     public class CheckInController : Controller
     {
        
-        public IActionResult Index()
+        public IActionResult Index(string id)
         {
+            ViewBag.flightNumber= TempData["flightNumber"]; // TempData ile flightNumber değerini View'a taşıyoruz
             return View();
         }
     }
