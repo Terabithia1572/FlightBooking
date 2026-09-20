@@ -1,19 +1,29 @@
 ﻿using FlightBooking.MachineLearningModels;
 using FlightBooking.Services.MachineLearningServices;
+// using FlightBooking.Services.NoShowServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Areas.Admin.Controllers
 {
-    [Area("Admin")] // Bu area , Admin alanına ait olduğunu belirtir
+    [Area("Admin")]
     public class ForecastController : Controller
     {
         private readonly MongoFlightDataService _mongoFlightDataService;
         private readonly FlightMlService _flightMlService;
+       // private readonly NoShowService _noShowService;
 
-        public ForecastController(FlightMlService flightMlService, MongoFlightDataService mongoFlightDataService)
+        public ForecastController(MongoFlightDataService mongoFlightDataService, FlightMlService flightMlService) //NoShowService noShowService)
         {
-            _flightMlService = flightMlService;
             _mongoFlightDataService = mongoFlightDataService;
+            _flightMlService = flightMlService;
+        //    _noShowService = noShowService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> NoShowAnalysis()
+        {
+          //  var values = await _noShowService.GetSlotBasedNoShowRatesAsync();
+            return View();
         }
 
         public async Task<IActionResult> TrainModel()
