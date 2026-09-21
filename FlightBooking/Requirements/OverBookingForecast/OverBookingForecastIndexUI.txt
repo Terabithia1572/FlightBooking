@@ -1,4 +1,4 @@
-﻿@model List<string>
+﻿﻿@model List<string>
 
 @{
     ViewData["Title"] = "2027 AI Overbooking Forecast";
@@ -838,4 +838,3 @@ function exportCSV() {
 }
 </script>
 }
-

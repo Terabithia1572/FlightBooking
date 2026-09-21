@@ -1,4 +1,5 @@
 ﻿using FlightBooking.DTOs.MachineLearningOverbookingDTOs;
+using FlightBooking.DTOs.OverBookingDTOs;
 using FlightBooking.Entites;
 using FlightBooking.Settings;
 using Microsoft.ML;
@@ -9,43 +10,39 @@ namespace FlightBooking.Services.OverBookingNoShowServices
     public class NoShowPredictionService
     {
         private readonly IMongoCollection<NoShowHistory> _noShowCollection;
-
         private readonly MLContext _mlContext;
 
-        public NoShowPredictionService(IConfiguration configuration)
+        public NoShowPredictionService(IDatabaseSettings settings)
         {
-            var client = new MongoClient(configuration["MongoDbSettings:ConnectionString"]);
-
-            var database = client.GetDatabase(configuration["MongoDbSettings:DatabaseName"]);
-
-            _noShowCollection = database.GetCollection<NoShowHistory>("NoShowHistories");
-
+            var client = new MongoClient(settings.ConnectionString);
+            var database = client.GetDatabase(settings.DatabaseName);
+            _noShowCollection = database.GetCollection<NoShowHistory>(settings.NoShowHistoryCollection);
             _mlContext = new MLContext();
         }
 
-        public async Task<List<string>> PredictJanuary2027Async()
+        public async Task<List<OverbookingForecastResultDTO>> PredictJanuary2027Async()
         {
             var historicalData = await _noShowCollection.Find(_ => true).ToListAsync();
 
+            // ML Training Data
             var trainingData = historicalData.Select(x => new NoShowPredictionData
             {
                 Month = DateTime.Parse(x.FlightDate).Month,
-
                 DayOfWeek = (float)DateTime.Parse(x.FlightDate).DayOfWeek,
-
-                FlightSlot =ConvertFlightSlotToNumber(x.FlightSlot),
+                FlightSlot = ConvertFlightSlotToNumber(x.FlightSlot),
                 Capacity = x.Capacity,
                 SoldTickets = x.SoldTickets,
-                OnlineCheckedIn =x.OnlineCheckedIn,
-                AirportCheckedIn =x.AirportCheckedIn,
-                MissedConnection =x.MissedConnection,
-                CancelledPassenger =x.CancelledPassenger,
-                NoShowPassenger =x.NoShowPassenger
+                OnlineCheckedIn = x.OnlineCheckedIn,
+                AirportCheckedIn = x.AirportCheckedIn,
+                MissedConnection = x.MissedConnection,
+                CancelledPassenger = x.CancelledPassenger,
+                NoShowPassenger = x.NoShowPassenger
             }).ToList();
 
-            var dataView =_mlContext.Data.LoadFromEnumerable(trainingData);
+            var dataView = _mlContext.Data.LoadFromEnumerable(trainingData);
 
-            var pipeline =_mlContext.Transforms.Concatenate("Features",
+            var pipeline = _mlContext.Transforms.Concatenate(
+                        "Features",
                         nameof(NoShowPredictionData.Month),
                         nameof(NoShowPredictionData.DayOfWeek),
                         nameof(NoShowPredictionData.FlightSlot),
@@ -54,71 +51,72 @@ namespace FlightBooking.Services.OverBookingNoShowServices
                         nameof(NoShowPredictionData.OnlineCheckedIn),
                         nameof(NoShowPredictionData.AirportCheckedIn),
                         nameof(NoShowPredictionData.MissedConnection),
-                        nameof(NoShowPredictionData.CancelledPassenger)
-                    ).Append(
-                _mlContext.Regression.Trainers
-                            .FastTree(labelColumnName:"NoShowPassenger",
-                            featureColumnName:"Features"));
+                        nameof(NoShowPredictionData.CancelledPassenger))
+                    .Append(_mlContext.Regression.Trainers.FastTree(labelColumnName: "NoShowPassenger", featureColumnName: "Features"));
 
             var model = pipeline.Fit(dataView);
 
-            var predictionEngine =_mlContext.Model.CreatePredictionEngine<NoShowPredictionData,
-                NoShowPredictionResult>(model);
+            var predictionEngine = _mlContext.Model.CreatePredictionEngine<NoShowPredictionData, NoShowPredictionResult>(model);
 
-            var results = new List<string>();
+            var results = new List<OverbookingForecastResultDTO>();
+
+            // Gerçek slot template'leri DB’den alınır
+            var slotTemplates = historicalData.GroupBy(x => x.FlightSlot).Select(g => g.First()).ToList();
 
             for (int day = 1; day <= 31; day++)
             {
                 var date = new DateTime(2027, 1, day);
 
-                var slots = new List<(string Slot,int Capacity)>
+                foreach (var slot in slotTemplates)
                 {
-                    ("Morning-1",180),
-                    ("Morning-2",189),
-                    ("Evening-1",220),
-                    ("Evening-2",240)
-                };
-
-                foreach (var slot in slots)
-                {
-                    var sample =new NoShowPredictionData{
-                            Month = 1,
-                        DayOfWeek =(float)date.DayOfWeek,
-                        FlightSlot =ConvertFlightSlotToNumber(slot.Slot),
+                    var sample = new NoShowPredictionData
+                    {
+                        Month = 1,
+                        DayOfWeek = (float)date.DayOfWeek,
+                        FlightSlot = ConvertFlightSlotToNumber(slot.FlightSlot),
                         Capacity = slot.Capacity,
-                        SoldTickets =slot.Capacity,
-                        OnlineCheckedIn =slot.Capacity * 0.70f,
-                        AirportCheckedIn =slot.Capacity * 0.20f,
+                        // Simüle edilen satış
+                        SoldTickets = slot.Capacity,
+                        // Ortalama check-in davranışı
+                        OnlineCheckedIn = slot.Capacity * 0.70f,
+                        AirportCheckedIn = slot.Capacity * 0.20f,
                         MissedConnection = 2,
                         CancelledPassenger = 1
-                        };
+                    };
 
-                    var prediction =
-                        predictionEngine.Predict(sample);
+                    var prediction = predictionEngine.Predict(sample);
+                    var predictedNoShow = (int)Math.Round(prediction.Score);
 
-                    var predictedNoShow =
-                        (int)Math.Round(
-                            prediction.Score);
+                    // Negatif prediction koruması
+                    if (predictedNoShow < 0)
+                        predictedNoShow = 0;
 
-                    var recommendedMaxSale =
-                        slot.Capacity +
-                        predictedNoShow;
+                    var recommendedMaxSale = slot.Capacity + predictedNoShow;
+
+                    var riskLevel = predictedNoShow >= 15 ? "High" : predictedNoShow >= 10 ? "Medium" : "Low";
+
+                    var estimatedRevenue = predictedNoShow * 120;
 
                     results.Add(
-                        $"{date:dd.MM.yyyy} | " +
-                        $"{slot.Slot} | " +
-                        $"Tahmini NoShow: " +
-                        $"{predictedNoShow} | " +
-                        $"Önerilen Max Satış: " +
-                        $"{recommendedMaxSale}");
+                        new OverbookingForecastResultDTO
+                        {
+                            FlightDate = date.ToString("dd.MM.yyyy"),
+                            FlightSlot = slot.FlightSlot,
+                            AircraftType = slot.AircraftType,
+                            Capacity = slot.Capacity,
+                            PredictedNoShow = predictedNoShow,
+                            RecommendedMaxSale = recommendedMaxSale,
+                            ExtraSeatCount = predictedNoShow,
+                            RiskLevel = riskLevel,
+                            EstimatedRevenue = estimatedRevenue
+                        });
                 }
             }
 
             return results;
         }
 
-        private float ConvertFlightSlotToNumber(
-            string slot)
+        private float ConvertFlightSlotToNumber(string slot)
         {
             return slot switch
             {
