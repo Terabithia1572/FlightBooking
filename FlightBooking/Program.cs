@@ -2,6 +2,7 @@ using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.CheckInServices;
 using FlightBooking.Services.FlightServices;
 using FlightBooking.Services.MachineLearningServices;
+using FlightBooking.Services.NoShowServices;
 using FlightBooking.Settings;
 using Microsoft.Extensions.Options;
 using System.Reflection;
@@ -11,9 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IFlightService, FlightService>(); // IFlightService arayüzünü ve FlightService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<IBookingService, BookingService>(); // IBookingService arayüzünü ve BookingService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<ICheckInService, CheckInService>(); // ICheckInService arayüzünü ve CheckInService sýnýfýný DI konteynerine ekledik.
-builder.Services.AddScoped<FlightMlService>(); // FlightMlService sýnýfýný DI konteynerine ekledik.
-builder.Services.AddScoped<FlightRegressionService>(); // FlightRegressionService sýnýfýný DI konteynerine ekledik.
+builder.Services.AddSingleton<FlightMlService>(); // FlightMlService sýnýfýný DI konteynerine ekledik.
+builder.Services.AddSingleton<FlightRegressionService>(); // FlightRegressionService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<MongoFlightDataService>(); // MongoFlightDataService sýnýfýný DI konteynerine ekledik.
+builder.Services.AddScoped<NoShowService>(); // NoShowService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly()); // AutoMapper'ý DI konteynerine ekledik ve mevcut assembly'i taradýk.
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey")); // DatabaseSettingsKey sýnýfýný DI konteynerine ekledik ve appsettings.json dosyasýndaki DatabaseSettings bölümünü bind ettik.
 builder.Services.AddScoped<IDatabaseSettings>(sp => {
