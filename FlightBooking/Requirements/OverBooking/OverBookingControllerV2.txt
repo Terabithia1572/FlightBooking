@@ -1,4 +1,4 @@
-﻿using FlightBooking.DTOs.NoShowDTOs;
+﻿﻿using FlightBooking.Dtos.NoShowDtos;
 using FlightBooking.Services.NoShowServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +8,7 @@ namespace FlightBooking.Areas.Admin.Controllers
     public class OverBookingController : Controller
     {
         private readonly NoShowService
-              _mongoNoShowService;
+            _mongoNoShowService;
 
         private readonly OverbookingRecommendationService
             _overbookingRecommendationService;
@@ -54,7 +54,7 @@ namespace FlightBooking.Areas.Admin.Controllers
                 recommendations.Add(recommendation);
             }
 
-            var dto = new OverbookingDashboardDTO
+            var dto = new OverbookingDashboardDto
             {
                 Recommendations = recommendations,
 

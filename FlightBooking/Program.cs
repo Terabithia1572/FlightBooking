@@ -16,6 +16,7 @@ builder.Services.AddSingleton<FlightMlService>(); // FlightMlService sýnýfýný DI
 builder.Services.AddSingleton<FlightRegressionService>(); // FlightRegressionService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<MongoFlightDataService>(); // MongoFlightDataService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<NoShowService>(); // NoShowService sýnýfýný DI konteynerine ekledik.
+builder.Services.AddScoped<OverbookingRecommendationService>(); // OverbookingRecommendationService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly()); // AutoMapper'ý DI konteynerine ekledik ve mevcut assembly'i taradýk.
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey")); // DatabaseSettingsKey sýnýfýný DI konteynerine ekledik ve appsettings.json dosyasýndaki DatabaseSettings bölümünü bind ettik.
 builder.Services.AddScoped<IDatabaseSettings>(sp => {
