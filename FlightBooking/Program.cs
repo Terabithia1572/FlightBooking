@@ -1,3 +1,4 @@
+using FlightBooking.AgentServices.IntentDetectors;
 using FlightBooking.AgentServices.OpenAIServices;
 using FlightBooking.AgentServices.PromptBuilders;
 using FlightBooking.AgentServices.TravelAgentService;
@@ -25,6 +26,7 @@ builder.Services.AddScoped<ITravelAgentService,TravelAgentService>(); // TravelA
 builder.Services.AddScoped<IOpenAIService, OpenAIService>(); // OpenAIService sýnýfýný DI konteynerine ekledik.
 builder.Services.Configure<OpenAISettings>(builder.Configuration.GetSection("OpenAISettingsKey")); // OpenAISettingsKey sýnýfýný DI konteynerine ekledik ve appsettings.json dosyasýndaki OpenAISettings bölümünü bind ettik.
 builder.Services.AddScoped<ITravelPromptBuilder, TravelPromptBuilder>(); // TravelPromptBuilder sýnýfýný DI konteynerine ekledik.
+builder.Services.AddScoped<IIntentDetector, TravelIntentDetector>(); // TravelIntentDetector sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<OverbookingRecommendationService>(); // OverbookingRecommendationService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<NoShowPredictionService>(); // NoShowPredictionService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly()); // AutoMapper'ý DI konteynerine ekledik ve mevcut assembly'i taradýk.
