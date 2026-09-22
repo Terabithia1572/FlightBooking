@@ -1,3 +1,4 @@
+using FlightBooking.AgentServices.OpenAIServices;
 using FlightBooking.AgentServices.TravelAgentService;
 using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.CheckInServices;
@@ -19,6 +20,7 @@ builder.Services.AddSingleton<FlightRegressionService>(); // FlightRegressionSer
 builder.Services.AddScoped<MongoFlightDataService>(); // MongoFlightDataService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<NoShowService>(); // NoShowService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<ITravelAgentService,TravelAgentService>(); // TravelAgentService sýnýfýný DI konteynerine ekledik.
+builder.Services.AddScoped<IOpenAIService, OpenAIService>(); // OpenAIService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<OverbookingRecommendationService>(); // OverbookingRecommendationService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<NoShowPredictionService>(); // NoShowPredictionService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly()); // AutoMapper'ý DI konteynerine ekledik ve mevcut assembly'i taradýk.

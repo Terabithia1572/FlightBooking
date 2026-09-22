@@ -1,39 +1,30 @@
-﻿
-using FlightBooking.AgentSettings;
-using FlightBooking.DTOs.AgentDTOs;
-using Microsoft.Extensions.Options;
-using System.Text;
-using System.Text.Json;
-
-namespace FlightBooking.AgentServices.OpenAIServices
-{
-    public class OpenAIService : IOpenAIService
-    {
-        private readonly HttpClient _httpClient;
+﻿﻿ private readonly HttpClient _httpClient;
         private readonly OpenAISettings _settings;
+
         public OpenAIService(HttpClient httpClient, IOptions<OpenAISettings> settings)
         {
             _httpClient = httpClient;
             _settings = settings.Value;
         }
-        public async Task<AgentResponseDTO> GetResponseAsync(string prompt)
+
+        public async Task<string> GetResponseAsync(string prompt)
         {
             var requestBody = new
             {
                 model = _settings.Model,
                 messages = new[]
                 {
-            new
-            {
-                role = "system",
-                content = "Sen bir seyahat ve restoran öneri asistanısın. Kısa, net ve kullanıcı dostu cevap ver."
-            },
-            new
-            {
-                role = "user",
-                content = prompt
-            }
-        },
+                    new
+                    {
+                        role = "system",
+                        content = "Sen bir seyahat ve restoran öneri asistanısın. Kısa, net ve kullanıcı dostu cevap ver."
+                    },
+                    new
+                    {
+                        role = "user",
+                        content = prompt
+                    }
+                },
                 temperature = 0.7
             };
 
@@ -47,17 +38,12 @@ namespace FlightBooking.AgentServices.OpenAIServices
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
+
             var responseContent = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
             {
-                return new AgentResponseDTO
-                {
-                    IsSuccess = false,
-                    Response = $"OpenAI API hatası: {responseContent}",
-                    Model = _settings.Model,
-                    ResponseTime = DateTime.Now
-                };
+                return $"OpenAI API hatası: {responseContent}";
             }
 
             using var document = JsonDocument.Parse(responseContent);
@@ -69,13 +55,5 @@ namespace FlightBooking.AgentServices.OpenAIServices
                 .GetProperty("content")
                 .GetString();
 
-            return new AgentResponseDTO
-            {
-                IsSuccess = true,
-                Response = result ?? "Cevap alınamadı.",
-                Model = _settings.Model,
-                ResponseTime = DateTime.Now
-            };
+            return result ?? "Cevap alınamadı.";
         }
-    }
-}

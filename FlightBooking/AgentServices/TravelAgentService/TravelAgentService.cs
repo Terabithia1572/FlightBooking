@@ -1,5 +1,6 @@
 ﻿
 using FlightBooking.AgentServices.OpenAIServices;
+using FlightBooking.DTOs.AgentDTOs;
 
 namespace FlightBooking.AgentServices.TravelAgentService
 {
@@ -12,10 +13,9 @@ namespace FlightBooking.AgentServices.TravelAgentService
             _openAIService = openAIService;
         }
 
-        public async Task<string> GetRestaurantRecommendationAsync(string cityName)
+        public async Task<AgentResponseDTO> AskAgentAsync(string prompt)
         {
-          var prompt = $"{cityName} şehrine giden bir turist için en iyi restoran önerilerini listele.";
-            return await _openAIService.GetResponseAsync(prompt);
+           return await _openAIService.GetResponseAsync(prompt);
         }
     }
 }

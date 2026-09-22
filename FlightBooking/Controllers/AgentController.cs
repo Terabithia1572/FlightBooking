@@ -1,4 +1,5 @@
 ﻿using FlightBooking.AgentServices.TravelAgentService;
+using FlightBooking.DTOs.AgentDTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Controllers
@@ -10,15 +11,17 @@ namespace FlightBooking.Controllers
         {
             _travelAgentService = travelAgentService;
         }
-
-        public async Task<IActionResult> Restaurant(string cityName)
+        [HttpGet]
+        public IActionResult AskAgent()
         {
-            if (string.IsNullOrEmpty(cityName))
-            {
-                return BadRequest("City name is required.");
-            }
-            var recommendation = await _travelAgentService.GetRestaurantRecommendationAsync(cityName);
-            return Ok(recommendation);
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AskAgent(AgentPromptRequestDTO request)
+        {
+           var result=await _travelAgentService.AskAgentAsync(request.Prompt);
+            return Content(result.Response);
         }
 
     }
