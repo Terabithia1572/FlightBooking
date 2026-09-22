@@ -1,11 +1,21 @@
 ﻿
+using FlightBooking.AgentServices.OpenAIServices;
+
 namespace FlightBooking.AgentServices.TravelAgentService
 {
     public class TravelAgentService : ITravelAgentService
     {
+        private readonly IOpenAIService _openAIService;
+
+        public TravelAgentService(IOpenAIService openAIService)
+        {
+            _openAIService = openAIService;
+        }
+
         public async Task<string> GetRestaurantRecommendationAsync(string cityName)
         {
-           return $"Şu an {cityName} şehrinde popüler restoranlar hakkında bilgi veremiyorum, ancak size genel önerilerde bulunabilirim. Örneğin, {cityName} şehrinde deniz ürünleri restoranları ve yerel mutfak deneyimleri oldukça popülerdir. Ayrıca, şehir merkezinde bulunan kafeler ve sokak lezzetleri de ziyaretçilerin ilgisini çekmektedir.";
+          var prompt = $"{cityName} şehrine giden bir turist için en iyi restoran önerilerini listele.";
+            return await _openAIService.GetResponseAsync(prompt);
         }
     }
 }
