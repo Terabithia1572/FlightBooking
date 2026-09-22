@@ -25,6 +25,7 @@ builder.Services.AddScoped<OverbookingRecommendationService>(); // OverbookingRe
 builder.Services.AddScoped<NoShowPredictionService>(); // NoShowPredictionService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly()); // AutoMapper'ý DI konteynerine ekledik ve mevcut assembly'i taradýk.
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey")); // DatabaseSettingsKey sýnýfýný DI konteynerine ekledik ve appsettings.json dosyasýndaki DatabaseSettings bölümünü bind ettik.
+builder.Services.AddHttpClient(); // HttpClient'ý DI konteynerine ekledik.
 builder.Services.AddScoped<IDatabaseSettings>(sp => {
     return sp.GetRequiredService<IOptions<DatabaseSettings>>().Value; // IDatabaseSettings arayüzünü DI konteynerine ekledik ve DatabaseSettings sýnýfýný bind ettik.
 }); 
