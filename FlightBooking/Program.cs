@@ -10,6 +10,7 @@ using FlightBooking.Services.MachineLearningServices;
 using FlightBooking.Services.NoShowServices;
 using FlightBooking.Services.OverBookingNoShowServices;
 using FlightBooking.Settings;
+using FlightBooking.Tools.WeatherTool;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 
@@ -29,6 +30,7 @@ builder.Services.AddScoped<ITravelPromptBuilder, TravelPromptBuilder>(); // Trav
 builder.Services.AddScoped<IIntentDetector, TravelIntentDetector>(); // TravelIntentDetector sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<OverbookingRecommendationService>(); // OverbookingRecommendationService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<NoShowPredictionService>(); // NoShowPredictionService sýnýfýný DI konteynerine ekledik.
+builder.Services.AddScoped<IWeatherTool, WeatherTool>(); // WeatherTool sýnýfýný DI konteynerine ekledik.
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly()); // AutoMapper'ý DI konteynerine ekledik ve mevcut assembly'i taradýk.
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey")); // DatabaseSettingsKey sýnýfýný DI konteynerine ekledik ve appsettings.json dosyasýndaki DatabaseSettings bölümünü bind ettik.
 builder.Services.AddHttpClient(); // HttpClient'ý DI konteynerine ekledik.
