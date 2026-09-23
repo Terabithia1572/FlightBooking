@@ -1,0 +1,195 @@
+﻿﻿using System.Text.Json.Serialization;
+
+namespace FlightBooking.Models
+{
+    // API'nin en dış cevabı
+    public class AirportSearchResponse
+    {
+        [JsonPropertyName("status")]
+        public bool Status { get; set; }
+
+        [JsonPropertyName("message")]
+        public string? Message { get; set; }
+
+        [JsonPropertyName("data")]
+        public List<AirportSearchData> Data { get; set; } = new();
+    }
+
+    // data[] içindeki her bir şehir/bölge nesnesi
+    public class AirportSearchData
+    {
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }          // örn "/m/0199rp" -> şehir kimliği (IATA DEĞİL)
+
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }
+
+        [JsonPropertyName("title")]
+        public string? Title { get; set; }       // örn "Adana, Türkiye"
+
+        [JsonPropertyName("subtitle")]
+        public string? Subtitle { get; set; }
+
+        [JsonPropertyName("city")]
+        public string? City { get; set; }
+
+        [JsonPropertyName("list")]
+        public List<AirportItem> List { get; set; } = new();
+    }
+
+    // list[] içindeki her bir havalimanı
+    public class AirportItem
+    {
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }          // örn "COV" -> IATA kodu burada
+
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }        // "airport"
+
+        [JsonPropertyName("title")]
+        public string? Title { get; set; }       // "Çukurova International Airport"
+
+        [JsonPropertyName("subtitle")]
+        public string? Subtitle { get; set; }
+
+        [JsonPropertyName("city")]
+        public string? City { get; set; }
+
+        [JsonPropertyName("distance")]
+        public string? Distance { get; set; }
+    }
+}
+
+-------------------------------------------------------------------------
+
+ public string Iata { get; set; } = "";        // "COV"
+        public string AirportName { get; set; } = "";  // "Çukurova International Airport"
+        public string City { get; set; } = "";         // "Mersin" / "Adana"
+        public string Title { get; set; } = "";        // "Adana, Türkiye"
+
+---------------------------------------------------------------------------
+
+using System.Text.Json;
+using FlightBooking.Models;
+
+namespace FlightBooking.Services
+{
+    public interface IAirportService
+    {
+        Task<List<AirportResult>> SearchAirportsAsync(string query);
+        Task<AirportResult?> GetFirstIataAsync(string query);
+    }
+
+    public class AirportService : IAirportService
+    {
+        private readonly HttpClient _client;
+
+        // HttpClient dependency injection ile geliyor (aşağıda Program.cs'de kaydedeceğiz)
+        public AirportService(HttpClient client)
+        {
+            _client = client;
+        }
+
+        // Bir şehir sorgusu için tüm havalimanlarını döndürür
+        public async Task<List<AirportResult>> SearchAirportsAsync(string query)
+        {
+            var results = new List<AirportResult>();
+
+            if (string.IsNullOrWhiteSpace(query))
+                return results;
+
+            // API isteğini kur
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(
+                    $"https://google-flights2.p.rapidapi.com/api/v1/searchAirport" +
+                    $"?query={Uri.EscapeDataString(query)}&language_code=tr-TR&country_code=TR"),
+                Headers =
+                {
+                    { "x-rapidapi-key", "630ce9cc86msh271c60cffe62d5ep1b514djsn0fe292593744" },
+                    { "x-rapidapi-host", "google-flights2.p.rapidapi.com" },
+                },
+            };
+
+            using var response = await _client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var body = await response.Content.ReadAsStringAsync();
+
+            // JSON'u modele çevir
+            var parsed = JsonSerializer.Deserialize<AirportSearchResponse>(body);
+
+            if (parsed?.Data == null)
+                return results;
+
+            // data[] -> her şehir -> list[] -> her havalimanı dolaş
+            foreach (var data in parsed.Data)
+            {
+                foreach (var airport in data.List)
+                {
+                    // Sadece gerçek havalimanlarını al ve IATA kodu 3 harfli olanları
+                    if (airport.Type == "airport" && !string.IsNullOrWhiteSpace(airport.Id))
+                    {
+                        results.Add(new AirportResult
+                        {
+                            Iata = airport.Id,                 // <-- IATA kodu burada
+                            AirportName = airport.Title ?? "",
+                            City = airport.City ?? data.City ?? "",
+                            Title = data.Title ?? ""
+                        });
+                    }
+                }
+            }
+
+            return results;
+        }
+
+        // Sadece ilk (en yakın) havalimanının IATA'sını isteyen basit senaryo için
+        public async Task<AirportResult?> GetFirstIataAsync(string query)
+        {
+            var list = await SearchAirportsAsync(query);
+            return list.FirstOrDefault();
+        }
+    }
+}
+
+
+---------------------------------------------------------------------------
+
+ [HttpGet]
+        public async Task<IActionResult> SearchAirport(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return Json(new List<object>());
+
+            try
+            {
+                var airports = await _airportService.SearchAirportsAsync(query);
+                return Json(airports);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        // Sadece IATA çözmek için: gidiş ve dönüş şehrini alıp iki IATA döndürür
+        [HttpGet]
+        public async Task<IActionResult> ResolveIata(string fromCity, string toCity)
+        {
+            var from = await _airportService.GetFirstIataAsync(fromCity);
+            var to   = await _airportService.GetFirstIataAsync(toCity);
+
+            return Json(new
+            {
+                fromIata = from?.Iata,
+                fromAirport = from?.AirportName,
+                toIata = to?.Iata,
+                toAirport = to?.AirportName
+            });
+        }
+
+
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
