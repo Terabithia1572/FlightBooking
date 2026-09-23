@@ -33,6 +33,7 @@ builder.Services.AddScoped<OverbookingRecommendationService>(); // OverbookingRe
 builder.Services.AddScoped<NoShowPredictionService>(); // NoShowPredictionService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<IWeatherTool, WeatherTool>(); // WeatherTool sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<ICityExtractor, OpenAICityExtractor>(); // OpenAICityExtractor sýnýfýný DI konteynerine ekledik.
+builder.Services.AddScoped<IOpenAIService, OpenAIService>(); // OpenAIService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly()); // AutoMapper'ý DI konteynerine ekledik ve mevcut assembly'i taradýk.
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey")); // DatabaseSettingsKey sýnýfýný DI konteynerine ekledik ve appsettings.json dosyasýndaki DatabaseSettings bölümünü bind ettik.
 builder.Services.AddHttpClient(); // HttpClient'ý DI konteynerine ekledik.
