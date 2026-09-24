@@ -65,6 +65,6 @@
         public string ToIata { get; set; } = "";
         public string ToAirport { get; set; } = "";
         public string Currency { get; set; } = "TRY";
-        public List<FlightCardDto> Flights { get; set; } = new();
+        public List<FlightCardDTO> Flights { get; set; } = new();
     }
 }

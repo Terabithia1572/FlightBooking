@@ -1,4 +1,6 @@
-﻿namespace FlightBooking.Services.AirportServices
+﻿using FlightBooking.Models;
+
+namespace FlightBooking.Services.AirportServices
 {
     public interface IAirportService
     {

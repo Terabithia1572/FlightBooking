@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace FlightBooking.Services.AirportServices.FlighSearchServices
 {
-    public class FlightSearchService
+    public class FlightSearchService : IFlightSearchService
     {
         private readonly HttpClient _client;
 
