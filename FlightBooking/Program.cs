@@ -5,6 +5,7 @@ using FlightBooking.AgentServices.PromptBuilders;
 using FlightBooking.AgentServices.TravelAgentService;
 using FlightBooking.AgentSettings;
 using FlightBooking.Services.AirportServices;
+using FlightBooking.Services.AirportServices.FlighSearchServices;
 using FlightBooking.Services.BookingServices;
 using FlightBooking.Services.CheckInServices;
 using FlightBooking.Services.FlightServices;
@@ -35,6 +36,7 @@ builder.Services.AddScoped<NoShowPredictionService>(); // NoShowPredictionServic
 builder.Services.AddScoped<IWeatherTool, WeatherTool>(); // WeatherTool sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<ICityExtractor, OpenAICityExtractor>(); // OpenAICityExtractor sýnýfýný DI konteynerine ekledik.
 builder.Services.AddScoped<IOpenAIService, OpenAIService>(); // OpenAIService sýnýfýný DI konteynerine ekledik.
+builder.Services.AddHttpClient<IFlightSearchService, FlightSearchService>(); // FlightSearchService sýnýfýný DI konteynerine ekledik ve HttpClient ile birlikte kullanabilmek için AddHttpClient metodunu kullandýk.
 builder.Services.AddScoped<IAirportService,AirportService>(); // AirportService sýnýfýný DI konteynerine ekledik.
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly()); // AutoMapper'ý DI konteynerine ekledik ve mevcut assembly'i taradýk.
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettingsKey")); // DatabaseSettingsKey sýnýfýný DI konteynerine ekledik ve appsettings.json dosyasýndaki DatabaseSettings bölümünü bind ettik.
